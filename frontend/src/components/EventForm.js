@@ -1,15 +1,31 @@
-import { useNavigate, Form } from 'react-router-dom'
+import {
+  useNavigate,
+  Form,
+  useNavigation,
+  useActionData,
+} from 'react-router-dom'
 
 import classes from './EventForm.module.css'
 
 function EventForm({ method, event }) {
+  const actionData = useActionData()
+
+  const navigation = useNavigation()
   const navigate = useNavigate()
+  const isSubmit = navigation.state === 'submitting'
   function cancelHandler() {
     navigate('..')
   }
 
   return (
-    <Form method='POST' className={classes.form}>
+    <Form method={method} className={classes.form}>
+      {actionData && actionData.errors && (
+        <ul>
+          {Object.values(actionData.errors).map((el) => (
+            <li>{el}</li>
+          ))}
+        </ul>
+      )}
       <p>
         <label htmlFor='title'>Title</label>
         <input
@@ -17,7 +33,7 @@ function EventForm({ method, event }) {
           type='text'
           name='title'
           required
-          placeholder={event ? event.title : ''}
+          defaultValue={event ? event.title : ''}
         />
       </p>
       <p>
@@ -27,7 +43,7 @@ function EventForm({ method, event }) {
           type='url'
           name='image'
           required
-          placeholder={event ? event.image : ''}
+          defaultValue={event ? event.image : ''}
         />
       </p>
       <p>
@@ -37,7 +53,7 @@ function EventForm({ method, event }) {
           type='date'
           name='date'
           required
-          placeholder={event ? event.date : ''}
+          defaultValue={event ? event.date : ''}
         />
       </p>
       <p>
@@ -47,14 +63,16 @@ function EventForm({ method, event }) {
           name='description'
           rows='5'
           required
-          placeholder={event ? event.description : ''}
+          defaultValue={event ? event.description : ''}
         />
       </p>
       <div className={classes.actions}>
-        <button type='button' onClick={cancelHandler}>
+        <button disabled={isSubmit} type='button' onClick={cancelHandler}>
           Cancel
         </button>
-        <button>Save</button>
+        <button disabled={isSubmit}>
+          {isSubmit ? 'submitting...' : 'Save'}
+        </button>
       </div>
     </Form>
   )

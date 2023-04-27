@@ -9,6 +9,7 @@ import EventsPage, { loader as Eventsloader } from './pages/Events'
 import EventsRootLayout from './pages/EventsRoot'
 import HomePage from './pages/Home'
 import NewEventPage, { action as EventAction } from './pages/NewEvent'
+import NewsletterPage, { action as newsletterAction } from './pages/Newsletter'
 import RootLayout from './pages/Root'
 import Error from './pages/Error'
 
@@ -39,12 +40,17 @@ const router = createBrowserRouter([
                 element: <EventDetailPage />,
                 action: singleActionEvent,
               },
-              { path: 'edit', element: <EditEventPage /> },
+              { path: 'edit', element: <EditEventPage />, action: EventAction },
             ],
           },
 
           { path: 'new', element: <NewEventPage />, action: EventAction },
         ],
+      },
+      {
+        path: 'newsletter',
+        element: <NewsletterPage />,
+        action: newsletterAction,
       },
     ],
   },

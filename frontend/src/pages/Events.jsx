@@ -1,17 +1,21 @@
+import { Suspense } from 'react'
 import EventsList from '../components/EventsList'
-import { useLoaderData, json } from 'react-router-dom'
+import { useLoaderData, json, defer, Await } from 'react-router-dom'
 function EventsPage() {
-  const data = useLoaderData().events
-  console.log(data)
+  const { events } = useLoaderData()
+  console.log(events)
   return (
-    <>
-      <EventsList events={data} />
-    </>
+    <Suspense fallback={<p style={{ textAlign: 'center' }}>LOADIDNG.....</p>}>
+      <Await resolve={events}>
+        {(resolverEvent) => <EventsList events={resolverEvent} />}
+      </Await>
+    </Suspense>
   )
 }
 
 export default EventsPage
-export const loader = async () => {
+
+const deferLoader = async () => {
   const response = await fetch('http://localhost:8080/events')
 
   if (!response.ok) {
@@ -22,6 +26,10 @@ export const loader = async () => {
       }
     )
   } else {
-    return response
+    const data = await response.json()
+    return data.events
   }
+}
+export const loader = () => {
+  return defer({ events: deferLoader() })
 }
